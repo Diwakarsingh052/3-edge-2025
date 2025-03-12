@@ -6,12 +6,17 @@ import (
 )
 
 func main() {
+	// don't use this pattern with buffered channel
+	// this pattern would fail
+	// buffered channel don't wait for receivers
+	// so after sending it would decrement the counter
+	// once counter is 0 which can happen before receives, then for loop would quit
 
 	wg := new(sync.WaitGroup)
 	wgWorker := new(sync.WaitGroup)
-	get := make(chan string, 2)
-	post := make(chan string, 2)
-	put := make(chan string, 2)
+	get := make(chan string)
+	post := make(chan string)
+	put := make(chan string)
 	done := make(chan struct{})
 
 	wgWorker.Add(3)
@@ -34,6 +39,8 @@ func main() {
 	go func() {
 		defer wg.Done()
 		wgWorker.Wait()
+
+		// close sends a signal to for loop, once all the goroutines finished sending
 		close(done)
 	}()
 	//	fmt.Println(<-get)
