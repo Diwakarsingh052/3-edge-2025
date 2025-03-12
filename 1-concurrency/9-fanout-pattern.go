@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-
+	// create one more waitgroup, use that to track fanned out goroutines
+	// once fanned out goroutines finishes close the channel
 	ch := make(chan int)
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
@@ -21,6 +22,7 @@ func main() {
 			}(i)
 
 		}
+		wg.Wait()
 		close(ch) // sends a signal to stop the range
 		//ch <- 100
 		// close signal range that no more values be sent and it can stop after receiving remaining values
@@ -32,6 +34,7 @@ func main() {
 	//}
 
 	// it would run infinitely, channel needs to be closed to stop this range
+	// range is a recv call, and receive would block until there is no send
 	for v := range ch {
 		fmt.Println(v)
 	}
