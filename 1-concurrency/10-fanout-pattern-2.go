@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 )
 
 func main() {
@@ -11,32 +12,31 @@ func main() {
 	ch := make(chan int)
 	wg := new(sync.WaitGroup)
 	wgWorker := new(sync.WaitGroup)
+
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+		time.Sleep(1 * time.Second)
 
-		for i := 1; i <= 10; i++ {
-
-			//we need to block our goroutine before closing the channel
-			//because we want to make sure all the work
-			// is done and finished
-			// wgWorker waitgroup we are using to track number of worker goroutines
+		for i := 1; i <= 5; i++ {
 			wgWorker.Add(1)
 			go func(id int) {
 				defer wgWorker.Done()
 				ch <- id
 			}(i)
-
 		}
 
-		// waiting until all the workers are not finished
-		wgWorker.Wait()
-
-		// closing when we are sure all the fanned out goroutines finished processing
-		close(ch) // sends a signal to stop the range
-		//ch <- 100
-		// close signal range that no more values be sent and it can stop after receiving remaining values
-		// once the channel is closed, we can't send more values to it
+		// using a goroutine to close the channel,
+		// make sure to run the below goroutine once we have incremented the counter value
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			wgWorker.Wait()
+			close(ch) // sends a signal to stop the range
+			//ch <- 100
+			// close signal range that no more values be sent and it can stop after receiving remaining values
+			// once the channel is closed, we can't send more values to it
+		}()
 	}()
 
 	//for i := 1; i <= 5; i++ {
