@@ -58,6 +58,8 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+		//waiting for all the bookings to finish, so we can close the channel
+		// to stop the for range which is receiving values from t.invoice
 		wgBook.Wait()
 		close(t.invoice)
 	}()
