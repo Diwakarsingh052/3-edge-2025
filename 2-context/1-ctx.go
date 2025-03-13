@@ -32,6 +32,11 @@ func main() {
 		defer wg.Done()
 		x := SlowFn()
 		select {
+		// if timeout already happened, then we would not send the value to the channel
+		// if ctx is not cancelled then only we send the value
+		// if we don't use this way of sending while dealing with context then
+		// there would be chance that sender would block forever waiting for receiver to come up
+
 		case ch <- x: // send
 			fmt.Println("value sent over the channel")
 		case <-ctx.Done():
