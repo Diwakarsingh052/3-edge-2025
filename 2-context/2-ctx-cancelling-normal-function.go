@@ -32,7 +32,8 @@ func SlowFnV2(ctx context.Context) (int, error) {
 	case <-ctx.Done():
 		fmt.Println("SlowFnV2 work is reversed")
 		return 0, ctx.Err()
-		// if context is not canceled then we move on and send the valid result
+		// if context is not canceled, then we move on and send the valid result
+		//default is always a non-blocking select
 	default:
 	}
 	return 100, nil
