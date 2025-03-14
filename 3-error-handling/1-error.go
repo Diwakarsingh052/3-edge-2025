@@ -17,7 +17,6 @@ func main() {
 	// avoid if else branching while checking for error, use return to stop the function
 	name, err := FetchRecord(1)
 	if err != nil {
-
 		// log.Println + os.Exit() // -> log.Fatal
 		//log.Fatal(err) // would quit the app // should only be used when critical parts are failing
 		//usually at startup and when there is no point of continuing
@@ -39,9 +38,10 @@ func main() {
 func FetchRecord(id int) (string, error) {
 	name, ok := user[id]
 	if !ok {
-		log.Println(ErrNotFound)
+		err := fmt.Errorf("user %d not found", id)
+		log.Println(err)
 		//return "", ErrNotFound // whenever error happens, set other values to their defaults
-		return "", fmt.Errorf("user %d not found", id)
+		return "", ErrNotFound
 	}
 	return name, nil
 
