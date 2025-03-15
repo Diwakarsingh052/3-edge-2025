@@ -14,6 +14,9 @@ func main() {
 func goroutine(w http.ResponseWriter, r *http.Request) {
 	//panic("this handler func is panicking")
 	go func() {
+		// if panic happens in the new goroutine that you have manually spun up
+		// then the program will crash
+		// we need manual recover in this case
 		panic("panic in the new goroutine")
 	}()
 
