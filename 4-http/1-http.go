@@ -15,6 +15,9 @@ func main() {
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
+	//w http.ResponseWriter, is used to write resp to the client
+	// http.Request// anything user send us would be in the request struct
+
 	// context object is inside the Request struct
 	ctx := r.Context() // this method gives the context from the request object
 	time.Sleep(time.Second * 5)
