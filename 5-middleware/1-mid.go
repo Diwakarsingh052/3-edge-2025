@@ -8,7 +8,7 @@ import (
 // middleware that exec some pre-processing or the post-processing logic
 // req -> mid1->mid-2-> handler->services
 func main() {
-	http.HandleFunc("/home", Mid(home))
+	http.HandleFunc("/home", Mid(Mid2(home)))
 	panic(http.ListenAndServe(":8080", nil))
 
 }
@@ -30,6 +30,14 @@ func Mid(next http.HandlerFunc) http.HandlerFunc {
 		fmt.Println("mid layer finished")
 	}
 
+}
+
+func Mid2(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("mid2 layer started")
+		next(w, r)
+		fmt.Println("mid2 layer finished")
+	}
 }
 
 // Create one more middleware and add that middleware to /home endpoint

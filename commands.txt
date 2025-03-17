@@ -1,0 +1,7 @@
+
+
+go get moduleName -> to download an individual module and add to the go mod
+
+go mod tidy -> download all the required deps for the project
+                fix module issues
+                remove unused deps
