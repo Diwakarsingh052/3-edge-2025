@@ -21,6 +21,7 @@ func API() http.Handler {
 }
 
 func Check(w http.ResponseWriter, r *http.Request) {
+	// setting the header for json content type
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "ok",
