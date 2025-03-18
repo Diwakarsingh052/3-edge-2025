@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"rest-api/handlers"
 	"time"
 )
 
@@ -22,7 +23,9 @@ func startApp() error {
 		ReadTimeout:  500 * time.Second,
 		WriteTimeout: 500 * time.Second,
 		IdleTimeout:  500 * time.Second,
+		Handler:      handlers.API(),
 	}
+
 	serverErr := make(chan error)
 	go func() {
 		serverErr <- api.ListenAndServe()
@@ -38,6 +41,7 @@ func startApp() error {
 		return err
 	case <-shutdown:
 		fmt.Println("Gracefully shutting down server...")
+		// creating a timer of 5sec for graceful shutdown
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		//Shutdown gracefully shuts down the server without interrupting any active connections.
