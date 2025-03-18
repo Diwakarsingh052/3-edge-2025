@@ -14,7 +14,7 @@ const TraceIdKey key = "1"
 
 func Logger(next http.Handler) http.Handler {
 	// http.Handler is an interface, so we can't return a function directly to it
-	// we have wrapped the call in http.HandlerFunc which is a type which implements the interface
+	// we have wrapped the call in http.HandlerFunc which is a type that implements the interface
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		traceId := uuid.NewString()
 		requestStartTime := time.Now()
