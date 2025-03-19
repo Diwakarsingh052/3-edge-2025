@@ -4,21 +4,26 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
+	"rest-api/auth"
 	"rest-api/middleware"
 )
 
-func API() http.Handler {
+func API(a *auth.Auth) (http.Handler, error) {
 
 	// standard lib
 	//mux := http.NewServeMux()
 	//return mux
 
 	r := mux.NewRouter()
+	m, err := middleware.NewMid(a)
+	if err != nil {
+		return nil, err
+	}
 	r.Use(middleware.Logger)
-	r.HandleFunc("/check", Check)
+	r.HandleFunc("/check", m.Authenticate(Check))
 
 	// we can return gorilla mux router as http.Handler because it implements the type
-	return r
+	return r, nil
 
 }
 

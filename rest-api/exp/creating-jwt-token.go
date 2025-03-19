@@ -29,6 +29,8 @@ func main() {
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(50 * time.Minute)),
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
 	}
+
+	// create encoded token with the claims payload
 	tkn := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	privatePem, err := os.ReadFile("private.pem")
 	if err != nil {
@@ -40,6 +42,7 @@ func main() {
 		log.Println(err)
 		return
 	}
+	// singing the token with our private key
 	token, err := tkn.SignedString(privateKey)
 	if err != nil {
 		log.Println(err)

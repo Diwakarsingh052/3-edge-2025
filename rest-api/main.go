@@ -2,10 +2,14 @@ package main
 
 import (
 	"context"
+	"crypto/rsa"
 	"fmt"
+	"github.com/golang-jwt/jwt/v5"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
+	"rest-api/auth"
 	"rest-api/handlers"
 	"time"
 )
@@ -18,12 +22,26 @@ func main() {
 }
 
 func startApp() error {
+	publicKey, err := SetupAuth()
+	if err != nil {
+		return err
+	}
+	a, err := auth.New(publicKey)
+	if err != nil {
+		return err
+	}
+
+	_ = a // we don't know what to do with a yet
+	h, err := handlers.API(a)
+	if err != nil {
+		return err
+	}
 	api := http.Server{
 		Addr:         ":8081",
 		ReadTimeout:  500 * time.Second,
 		WriteTimeout: 500 * time.Second,
 		IdleTimeout:  500 * time.Second,
-		Handler:      handlers.API(),
+		Handler:      h,
 	}
 
 	serverErr := make(chan error)
@@ -58,4 +76,19 @@ func startApp() error {
 
 	}
 	return nil
+}
+
+func SetupAuth() (*rsa.PublicKey, error) {
+	// Initialize authentication support
+	slog.Info("main : Started : Initializing authentication support")
+
+	publicPEM, err := os.ReadFile("pubkey.pem")
+	if err != nil {
+		return nil, fmt.Errorf("reading auth public key %w", err)
+	}
+	publicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicPEM)
+	if err != nil {
+		return nil, fmt.Errorf("parsing auth public key %w", err)
+	}
+	return publicKey, nil
 }
