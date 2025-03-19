@@ -31,7 +31,6 @@ func startApp() error {
 		return err
 	}
 
-	_ = a // we don't know what to do with a yet
 	h, err := handlers.API(a)
 	if err != nil {
 		return err
