@@ -16,6 +16,9 @@ func NewConn() *Conn {
 	return &Conn{store: make(CacheStore, 100)}
 }
 
+// ErrNotFound is an error returned when the requested user data is not found.
+var ErrNotFound = errors.New("user not found")
+
 func (c *Conn) CreateUser(n NewUser) (User, error) {
 	passHash, err := bcrypt.GenerateFromPassword([]byte(n.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -36,4 +39,18 @@ func (c *Conn) CreateUser(n NewUser) (User, error) {
 	c.store = CacheStore{us.Email: us}
 	return us, nil
 
+}
+
+// FetchUser retrieves a User object from the in-memory database by its ID.
+// It returns the User object and an error, which is nil if the user is found and ErrDataNotPresent otherwise.
+func (c *Conn) FetchUser(userEmail string) (User, error) {
+	value, ok := c.store[userEmail]
+
+	// If ok is false, there is no user with the given ID.
+	if !ok {
+		return User{}, ErrNotFound
+	}
+
+	// If ok is true, the user was found and is returned.
+	return value, nil
 }

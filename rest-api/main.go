@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"rest-api/auth"
 	"rest-api/handlers"
+	"rest-api/models"
 	"time"
 )
 
@@ -22,6 +23,8 @@ func main() {
 }
 
 func startApp() error {
+
+	// Initialize authentication support
 	publicKey, err := SetupAuth()
 	if err != nil {
 		return err
@@ -31,7 +34,11 @@ func startApp() error {
 		return err
 	}
 
-	h, err := handlers.API(a)
+	//----------- Initialize cache
+	slog.Info("main : Started : Initializing cache ")
+	c := models.NewConn()
+
+	h, err := handlers.API(a, c)
 	if err != nil {
 		return err
 	}
@@ -78,7 +85,7 @@ func startApp() error {
 }
 
 func SetupAuth() (*rsa.PublicKey, error) {
-	// Initialize authentication support
+
 	slog.Info("main : Started : Initializing authentication support")
 
 	publicPEM, err := os.ReadFile("pubkey.pem")

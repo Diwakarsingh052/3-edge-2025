@@ -7,15 +7,21 @@ import (
 	"net/http"
 	"rest-api/auth"
 	"rest-api/middleware"
+	"rest-api/models"
 )
 
-func API(a *auth.Auth) (http.Handler, error) {
+type handler struct {
+	conn *models.Conn
+}
+
+func API(a *auth.Auth, c *models.Conn) (http.Handler, error) {
 
 	// standard lib
 	//mux := http.NewServeMux()
 	//return mux
 
 	r := mux.NewRouter()
+	h := handler{conn: c}
 	m, err := middleware.NewMid(a)
 	if err != nil {
 		return nil, err
@@ -27,7 +33,7 @@ func API(a *auth.Auth) (http.Handler, error) {
 
 	userRouter := r.PathPrefix("/user").Subrouter()
 	// signup doesn't need auth, it would be accessible
-	userRouter.HandleFunc("/signup", signup)
+	userRouter.HandleFunc("/signup", h.Signup)
 
 	userAuthenticatedRouter := userRouter.NewRoute().Subrouter()
 	//we are creating a new router so we can apply authentication to the specific routes
@@ -42,10 +48,6 @@ func API(a *auth.Auth) (http.Handler, error) {
 
 func getUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "get user ")
-}
-
-func signup(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "signup user ")
 }
 
 func Check(w http.ResponseWriter, r *http.Request) {
