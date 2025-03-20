@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/mux"
 	"log/slog"
 	"net/http"
 	"rest-api/middleware"
@@ -87,6 +88,56 @@ func (h *handler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	return
+
+}
+
+// GetUser - Fetch user data by email (query parameter)
+func (h *handler) GetUser(w http.ResponseWriter, r *http.Request) {
+	// Set response content-type to JSON
+	w.Header().Set("Content-Type", "application/json")
+	traceId := GetTraceIdOfRequest(r)
+
+	variableMap := mux.Vars(r)
+	email := variableMap["email"]
+	if email == "" {
+		slog.Error("missing user_email query parameter", slog.String("TraceID", traceId))
+		err := sendJsonResponse(w, http.StatusBadRequest, map[string]string{"error": "missing user_email query parameter"})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		return
+	}
+
+	// Validate the email
+	v := validator.New()
+	err := v.Var(email, "required,email")
+	if err != nil {
+		slog.Error("invalid email format", slog.String("TraceID", traceId), slog.String("Error", err.Error()))
+		err := sendJsonResponse(w, http.StatusBadRequest, map[string]string{"error": "invalid email format"})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		return
+	}
+
+	user, err := h.conn.FetchUser(email)
+	if err != nil {
+		slog.Error("error fetching user", slog.String("TraceID", traceId), slog.String("Error", err.Error()))
+		err := sendJsonResponse(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		return
+	}
+
+	err = sendJsonResponse(w, http.StatusOK, user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 }
 

@@ -38,7 +38,7 @@ func API(a *auth.Auth, c *models.Conn) (http.Handler, error) {
 	userAuthenticatedRouter := userRouter.NewRoute().Subrouter()
 	//we are creating a new router so we can apply authentication to the specific routes
 	userAuthenticatedRouter.Use(m.Authenticate)
-	userAuthenticatedRouter.HandleFunc("/fetch/{email}", getUser)
+	userAuthenticatedRouter.HandleFunc("/fetch/{email}", h.GetUser)
 	userAuthenticatedRouter.HandleFunc("/check", Check)
 
 	// we can return gorilla mux router as http.Handler because it implements the type
