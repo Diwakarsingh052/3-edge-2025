@@ -8,6 +8,6 @@ func SumInt(vs []int) int {
 	for _, v := range vs {
 		sum = v + sum
 	}
-	return sum + 1
+	return sum
 
 }

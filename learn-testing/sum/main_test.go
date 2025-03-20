@@ -41,6 +41,7 @@ func TestTableTestSumInt(t *testing.T) {
 		args []int
 		want int
 	}{
+		// each index in slice would represent one test case
 		{
 			name: "one to five numbers",
 			args: []int{1, 2, 3, 4, 5},
@@ -54,8 +55,10 @@ func TestTableTestSumInt(t *testing.T) {
 	}
 
 	for _, tc := range tt {
+		// t.Run would create a subtest
 		t.Run(tc.name, func(t *testing.T) {
 			got := SumInt(tc.args)
+			// failing one subtest would not affect another one
 			require.Equal(t, tc.want, got)
 		})
 
