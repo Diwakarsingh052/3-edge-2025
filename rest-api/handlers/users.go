@@ -9,6 +9,16 @@ import (
 	"rest-api/models"
 )
 
+/*
+localhost:8081/user/signup
+
+	{
+	  "name": "John Doe",
+	  "email": "johndoe@example.com",
+	  "age": 25,
+	  "password": "your_secure_password"
+	}
+*/
 func (h *handler) Signup(w http.ResponseWriter, r *http.Request) {
 	// Set response content-type to JSON
 	w.Header().Set("Content-Type", "application/json")
