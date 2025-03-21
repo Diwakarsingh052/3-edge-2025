@@ -1,0 +1,8 @@
+
+#docker compose up --build
+services:
+    small-app:
+      build: .
+      container_name: small-app
+      ports:
+        - "8081:80"
