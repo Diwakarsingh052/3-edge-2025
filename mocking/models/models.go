@@ -1,4 +1,4 @@
-package models
+package model
 
 // run go generate command from the cli
 // make sure terminal is in the current location
